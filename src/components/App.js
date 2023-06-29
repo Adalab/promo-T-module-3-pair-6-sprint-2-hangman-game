@@ -1,52 +1,45 @@
-import { useEffect, useState } from 'react';
-import Header from './Header/Header'
+import { useEffect, useState } from "react";
+import { NavLink, Route, Routes } from "react-router-dom";
+//components
+import Header from "./Header/Header";
+import Form from "./Form/Form";
+import Footer from "./Footer/Footer";
+import Dummy from "./Dummy/Dummy";
+import SolutionLetters from "./SolutionLetters/SolutionLetters";
+import ErrorLetters from "./ErrorLetters/ErrorLetters";
 // api
-import getWordFromApi from '../services/api';
+import getWordFromApi from "../services/api";
 // styles
-import '../styles/App.scss';
-import '../styles/Dummy.scss';
-import '../styles/Letters.scss';
-import '../styles/Form.scss';
-import '../styles/Header.scss';
-import '../styles/Footer.scss';
-import '../styles/Instructions.scss';
-import '../styles/Loading.scss';
-import '../images/blackboard.jpg';
-import Dummy from './Dummy/Dummy';
-import SolutionLetters from './SolutionLetters/SolutionLetters';
-import ErrorLetters from './ErrorLetters/ErrorLetters';
+import "../styles/App.scss";
+import "../styles/Dummy.scss";
+import "../styles/Letters.scss";
+import "../styles/Form.scss";
+import "../styles/Header.scss";
+import "../styles/Footer.scss";
+import "../styles/Instructions.scss";
+import "../styles/Loading.scss";
+//images
+import "../images/blackboard.jpg";
 
 function App() {
-  const [word, setWord] = useState('');
+  const [word, setWord] = useState("");
   const [userLetters, setUserLetters] = useState([]);
-  const [lastLetter, setLastLetter] = useState('');
+  const [lastLetter, setLastLetter] = useState("");
   useEffect(() => {
     getWordFromApi().then((word) => {
       setWord(word);
     });
   }, []);
+
   // events
-  const handleKeyDown = (ev) => {
-    // Sabrías decir para qué es esta línea
-    ev.target.setSelectionRange(0, 1);
-  };
-  const handleChange = (ev) => {
-    let re = /^[a-zA-ZñÑá-úÁ-Ú´]$/; //add regular pattern
-    if (re.test(ev.target.value) || ev.target.value === '') {
-      handleLastLetter(ev.target.value);
-    }
-  };
-  const handleSubmit = (ev) => {
-    ev.preventDefault();
-  };
+
   const getNumberOfErrors = () => {
     const errorLetters = userLetters.filter(
       (letter) => word.includes(letter) === false
     );
     return errorLetters.length;
   };
-  
-  
+
   const handleLastLetter = (value) => {
     value = value.toLocaleLowerCase();
     setLastLetter(value);
@@ -56,32 +49,17 @@ function App() {
     }
   };
   return (
-    <div className='page'>
-      <Header/>
-        <main className='main'>
+    <div className="page">
+      <Header />
+      <main className="main">
         <section>
-          <SolutionLetters word = {word} userLetters = {userLetters}/>
-          <ErrorLetters userLetters = {userLetters} word = {word}/>
-          <form className='form' onSubmit={handleSubmit}>
-            <label className='title' htmlFor='last-letter'>
-              Escribe una letra:
-            </label>
-            <input
-              autoFocus
-              autoComplete='off'
-              className='form__input'
-              maxLength='1'
-              type='text'
-              name='last-letter'
-              id='last-letter'
-              value={lastLetter}
-              onKeyDown={handleKeyDown}
-              onChange={handleChange}
-            />
-          </form>
+          <SolutionLetters word={word} userLetters={userLetters} />
+          <ErrorLetters userLetters={userLetters} word={word} />
+          <Form lastLetter={lastLetter} handleLastLetter={handleLastLetter} />
         </section>
-        <Dummy numberOfErrors = {getNumberOfErrors ()}/>
+        <Dummy numberOfErrors={getNumberOfErrors()} />
       </main>
+      <Footer NavLink={NavLink} />
     </div>
   );
 }
